@@ -29,7 +29,7 @@ const checkBrackets = (expression) => {
     }
 
     return stack.length == 0;
-}
+};
 
 /**
  * Возвращает приоритет арифметического оператора.
@@ -53,7 +53,7 @@ const getPriority = (operator) => {
         case '/':
             return 4;
     };
-}
+};
 
 /**
  * Проверяет является ли символ оператором.
@@ -67,8 +67,7 @@ const isOperator = (symbol) => {
         return true;
     }
     return false;
-}
-
+};
 
 /**
  * Проверяет является ли символ цифрой.
@@ -82,7 +81,7 @@ const isDigit = (symbol) => {
         return true;
     }
     return false;
-}
+};
 
 /**
  * Возвращает выражение переведенное в постфиксную форму.
@@ -140,7 +139,7 @@ const toRPN = (expression) => {
     }
 
     return rpn;
-}
+};
 
 /**
  * Возвращает результат выполнения арифметической операции.
@@ -167,7 +166,7 @@ const operations = (operator, firstArgument, secondArgument) => {
             result = secondArgument / firstArgument;
             return result;
     }
-}
+};
 
 /**
  * Возвращает посчитанное значение выражения в ОПЗ.
@@ -203,7 +202,7 @@ const calculateRPN = (expression) => {
     }
 
     return stack.pop();
-}
+};
 
 /**
  * Возвращает значение выражения с подставленным x.
@@ -239,4 +238,4 @@ const solve = (expression, xValue) => {
     }
 
     return result;
-}
+};
