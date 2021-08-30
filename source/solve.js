@@ -1,5 +1,11 @@
 'use strict';
 
+const DIGIT = /[0-9]/;
+const NO_VALID_SYMBOLS = /^[-+*\/()0-9\sx]+$/;
+
+const SYNTAX_ERROR = 'Syntax error: expression can only contain numbers, operation signs and the x variable.';
+const EXPRESSION_ERROR = 'Expression error.';
+
 /**
  * Проверяет правильность расстановки скобок в выражении.
  *
@@ -9,8 +15,8 @@
 
 const checkBrackets = (expression) => {
     let stack = [];
-    const open = "(";
-    const close = ")";
+    const open = '(';
+    const close = ')';
 
     for (const symbol of expression) {
         let i = open.indexOf(symbol);
@@ -72,21 +78,25 @@ const isOperator = (symbol) => {
  */
 
 const isDigit = (symbol) => {
-    if (/[0-9]/.test(symbol)) {
+    if (DIGIT.test(symbol)) {
         return true;
     }
     return false;
 }
 
 /**
- * ВВозвращает выражение переведенное в постфиксную форму.
+ * Возвращает выражение переведенное в постфиксную форму.
  *
  * @param {string} expression Арифметическое выражение.
  * @return {string} Выражение в постфиксной форме.
  */
 
 const toRPN = (expression) => {
-    let rpn = "";
+    if (typeof(expression) != 'string') {
+        throw new TypeError('Invalid type of expression');
+    }
+
+    let rpn = '';
     let operatorsStack = [];
     for (let i = 0; i < expression.length; i++) {
         if (expression[i] == ' ') {
@@ -160,6 +170,42 @@ const operations = (operator, firstArgument, secondArgument) => {
 }
 
 /**
+ * Возвращает посчитанное значение выражения в ОПЗ.
+ *
+ * @param {string} expression Арифметическое выражение.
+ * @return {number} Вычисленное значение этого выражения.
+ */
+
+const calculateRPN = (expression) => {
+    if (typeof(expression) != 'string') {
+        throw new TypeError('Invalid type of expression');
+    }
+
+    let stack = [];
+
+    for (let i = 0; i < expression.length; i++) {
+        if (isDigit(expression[i])) {
+            let fullNumber = '';
+            while (isDigit(expression[i])) {
+                fullNumber += expression[i];
+                i++;
+                if (i == expression.length) {
+                    break;
+                }
+            }
+            stack.push(parseInt(fullNumber));
+            i--;
+        } else if (isOperator(expression[i])) {
+            const firstArgument = stack.pop();
+            const secondArgument = stack.pop();
+            stack.push(operations(expression[i], firstArgument, secondArgument));
+        }
+    }
+
+    return stack.pop();
+}
+
+/**
  * Возвращает значение выражения с подставленным x.
  *
  * @param {string} expression Арифметическое выражение.
@@ -168,38 +214,29 @@ const operations = (operator, firstArgument, secondArgument) => {
  */
 
 const solve = (expression, xValue) => {
-    const str = expression.replace(/x/g, String(xValue));
-
-    if (!(/^[-+*\/()0-9\s]/.test(str))) {
-        return "Формат выражения не верен! Выражение может содержать только цифры и знаки операций";
+    if (!(NO_VALID_SYMBOLS.test(expression)) || (!(isDigit(xValue)))) {
+        return SYNTAX_ERROR;
     }
 
     if (!(checkBrackets(expression))) {
-        return "Ошибка в выражении";
+        return EXPRESSION_ERROR;
     }
 
-    const rpn = toRPN(str);
+    const str = expression.replace(/x/g, String(xValue));
 
-    let stack = [];
-
-    for (let i = 0; i < rpn.length; i++) {
-        if (isDigit(rpn[i])) {
-            let fullNumber = "";
-            while (isDigit(rpn[i])) {
-                fullNumber += rpn[i];
-                i++;
-                if (i == rpn.length) {
-                    break;
-                }
-            }
-            stack.push(parseInt(fullNumber));
-            i--;
-        } else if (isOperator(rpn[i])) {
-            const firstArgument = stack.pop();
-            const secondArgument = stack.pop();
-            stack.push(operations(rpn[i], firstArgument, secondArgument));
-        }
+    let rpn = '';
+    try {
+        rpn = toRPN(str);
+    } catch (e) {
+        return e.message;
     }
 
-    return stack.pop();
+    let result = 0;
+    try {
+        result = calculateRPN(rpn);
+    } catch (e) {
+        return e.message;
+    }
+
+    return result;
 }
