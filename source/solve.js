@@ -5,6 +5,8 @@ const NO_VALID_SYMBOLS_REGEX = /^[-+*\/()0-9\sx]+$/;
 const OPERATORS_REGEX = /[-+*\/()]/
 
 const EXPRESSION_ERROR = 'Expression error.';
+const SYNTAX_ERROR = 'expression can only contain numbers, operation signs and the x variable.';
+const TYPE_ERROR = 'Invalid type of expression';
 
 /**
  * Проверяет правильность расстановки скобок в выражении.
@@ -92,7 +94,7 @@ const isDigit = (symbol) => {
 
 const stringToPostfix = (expression) => {
     if (typeof(expression) !== 'string') {
-        throw new TypeError('Invalid type of expression');
+        throw new TypeError(TYPE_ERROR);
     }
 
     let rpn = '';
@@ -139,7 +141,7 @@ const stringToPostfix = (expression) => {
     }
 
     if (!((OPERATORS_REGEX.test(rpn)) && (DIGIT_REGEX.test(rpn)) && !!rpn)) {
-        throw new Error('Expression error.');
+        throw new Error(EXPRESSION_ERROR);
     }
 
     return rpn;
@@ -183,7 +185,7 @@ const operations = (operator, firstArgument, secondArgument) => {
 
 const calculatePostfix = (expression) => {
     if (typeof(expression) != 'string') {
-        throw new TypeError('Invalid type of expression');
+        throw new TypeError(TYPE_ERROR);
     }
 
     let stack = [];
@@ -210,7 +212,7 @@ const calculatePostfix = (expression) => {
     let result = stack.pop();
 
     if (isNaN(result)) {
-        throw new Error('Expression error.');
+        throw new Error(EXPRESSION_ERROR);
     }
 
     return result;
@@ -226,15 +228,15 @@ const calculatePostfix = (expression) => {
 
 const solve = (expression, xValue) => {
     if (typeof(expression) != 'string') {
-        throw new TypeError('Invalid type of expression');
+        throw new TypeError(TYPE_ERROR);
     }
 
     if (!(NO_VALID_SYMBOLS_REGEX.test(expression)) || (!(isDigit(xValue)))) {
-        throw new SyntaxError('expression can only contain numbers, operation signs and the x variable.');
+        throw new SyntaxError(SYNTAX_ERROR);
     }
 
     if (!(checkBrackets(expression))) {
-        throw new Error('Expression error.');
+        throw new Error(EXPRESSION_ERROR);
     }
 
     const str = expression.replace(/x/g, String(xValue));

@@ -2,6 +2,8 @@
 
 QUnit.module('Тестируем функцию solve', function () {
 	const EXPRESSION_ERROR = 'Expression error.';
+	const SYNTAX_ERROR = 'expression can only contain numbers, operation signs and the x variable.';
+	const TYPE_ERROR = 'Invalid type of expression';
 
 	QUnit.test('solve работает правильно ', function (assert) {
 		assert.strictEqual(solve('x + 1', 1), 2);
@@ -94,49 +96,49 @@ QUnit.module('Тестируем функцию solve', function () {
 						  solve('x  + 4 -(  5 - 2)', 'a');
 						},
 					  function (err) {
-						  return String(err.name) === 'SyntaxError';
+						  return String(err.message) === SYNTAX_ERROR;
 						},
 					  'Error thrown');
 		assert.throws(function() {
 					  	  solve('4 * 6 + (5 - 1 * x)', 'x');
 						},
 					  function (err) {
-						  return String(err.name) === 'SyntaxError';
+						  return String(err.message) === SYNTAX_ERROR;
 						},
 					  'Error thrown');
 		assert.throws(function() {
 					      solve('2abc*x*3', 3);
 					  },
 					  function (err) {
-						  return String(err.name) === 'SyntaxError';
+						  return String(err.message) === SYNTAX_ERROR;
 					  },
 					  'Error thrown');
 		assert.throws(function() {
 					  	  solve('x^100', 3);
 					  },
 					  function (err) {
-						  return String(err.name) === 'SyntaxError';
+						  return String(err.message) === SYNTAX_ERROR;
 					  },
 					 'Error thrown');
 		assert.throws(function() {
 					      solve('a++', 3);
 					  },
 					  function (err) {
-						  return String(err.name) === 'SyntaxError';
+						  return String(err.message) === SYNTAX_ERROR;
 					  },
 					  'Error thrown');
 		assert.throws(function() {
 					      solve('Hello + x', 3);
 					  },
 					  function (err) {
-						  return String(err.name) === 'SyntaxError';
+						  return String(err.message) === SYNTAX_ERROR;
 					  },
 					  'Error thrown');
 		assert.throws(function() {
 					      solve(5, 5);
 					  },
 					  function (err) {
-						  return String(err.name) === 'TypeError';
+						  return String(err.message) === TYPE_ERROR;
 					  },
 					  'Error thrown');
 	});
