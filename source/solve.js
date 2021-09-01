@@ -1,9 +1,9 @@
 'use strict';
 
-const DIGIT = /[0-9]/;
-const NO_VALID_SYMBOLS = /^[-+*\/()0-9\sx]+$/;
+const DIGIT_REGEX = /[0-9]/;
+const NO_VALID_SYMBOLS_REGEX = /^[-+*\/()0-9\sx]+$/;
+const OPERATORS_REGEX = /[-+*\/()]/
 
-const SYNTAX_ERROR = 'Syntax error: expression can only contain numbers, operation signs and the x variable.';
 const EXPRESSION_ERROR = 'Expression error.';
 
 /**
@@ -63,7 +63,7 @@ const getPriority = (operator) => {
  */
 
 const isOperator = (symbol) => {
-    if (/[-+*\/()]/.test(symbol)) {
+    if (OPERATORS_REGEX.test(symbol)) {
         return true;
     }
     return false;
@@ -77,7 +77,7 @@ const isOperator = (symbol) => {
  */
 
 const isDigit = (symbol) => {
-    if (DIGIT.test(symbol)) {
+    if (DIGIT_REGEX.test(symbol)) {
         return true;
     }
     return false;
@@ -90,8 +90,8 @@ const isDigit = (symbol) => {
  * @return {string} Выражение в постфиксной форме.
  */
 
-const toRPN = (expression) => {
-    if (typeof(expression) != 'string') {
+const stringToPostfix = (expression) => {
+    if (typeof(expression) !== 'string') {
         throw new TypeError('Invalid type of expression');
     }
 
@@ -138,6 +138,10 @@ const toRPN = (expression) => {
         rpn += operatorsStack.pop() + ' ';
     }
 
+    if (!((OPERATORS_REGEX.test(rpn)) && (DIGIT_REGEX.test(rpn)) && !!rpn)) {
+        throw new Error('Expression error.');
+    }
+
     return rpn;
 };
 
@@ -165,6 +169,8 @@ const operations = (operator, firstArgument, secondArgument) => {
         case '/':
             result = secondArgument / firstArgument;
             return result;
+        default:
+            return null;
     }
 };
 
@@ -175,7 +181,7 @@ const operations = (operator, firstArgument, secondArgument) => {
  * @return {number} Вычисленное значение этого выражения.
  */
 
-const calculateRPN = (expression) => {
+const calculatePostfix = (expression) => {
     if (typeof(expression) != 'string') {
         throw new TypeError('Invalid type of expression');
     }
@@ -201,7 +207,13 @@ const calculateRPN = (expression) => {
         }
     }
 
-    return stack.pop();
+    let result = stack.pop();
+
+    if (isNaN(result)) {
+        throw new Error('Expression error.');
+    }
+
+    return result;
 };
 
 /**
@@ -213,29 +225,23 @@ const calculateRPN = (expression) => {
  */
 
 const solve = (expression, xValue) => {
-    if (!(NO_VALID_SYMBOLS.test(expression)) || (!(isDigit(xValue)))) {
-        return SYNTAX_ERROR;
+    if (typeof(expression) != 'string') {
+        throw new TypeError('Invalid type of expression');
+    }
+
+    if (!(NO_VALID_SYMBOLS_REGEX.test(expression)) || (!(isDigit(xValue)))) {
+        throw new SyntaxError('expression can only contain numbers, operation signs and the x variable.');
     }
 
     if (!(checkBrackets(expression))) {
-        return EXPRESSION_ERROR;
+        throw new Error('Expression error.');
     }
 
     const str = expression.replace(/x/g, String(xValue));
 
-    let rpn = '';
-    try {
-        rpn = toRPN(str);
-    } catch (e) {
-        return e.message;
-    }
+    const rpn = stringToPostfix(str);
 
-    let result = 0;
-    try {
-        result = calculateRPN(rpn);
-    } catch (e) {
-        return e.message;
-    }
+    const result = calculatePostfix(rpn);
 
     return result;
 };

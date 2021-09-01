@@ -1,7 +1,6 @@
 'use strict';
 
 QUnit.module('Тестируем функцию solve', function () {
-	const SYNTAX_ERROR = 'Syntax error: expression can only contain numbers, operation signs and the x variable.';
 	const EXPRESSION_ERROR = 'Expression error.';
 
 	QUnit.test('solve работает правильно ', function (assert) {
@@ -18,15 +17,127 @@ QUnit.module('Тестируем функцию solve', function () {
 		assert.strictEqual(solve('x  +    4 *  (  5   - 2)', 2), 14);
 		assert.strictEqual(solve('2+4*(5-x)', 1), 18);
 	});
-	QUnit.test('solve правильно обрабатывает ошибку с недостающими скобками ', function (assert) {
-		assert.strictEqual(solve('x + (x - 3))', 2), EXPRESSION_ERROR);
+	QUnit.test('solve правильно обрабатывает ошибку с ошибками в выражении ', function (assert) {
+		assert.throws(function() {
+						       solve('x + (x - 3))', 2);
+						   },
+						   function (err) {
+							   return String(err.message) === EXPRESSION_ERROR;
+						   },
+						   'Error thrown');
+		assert.throws(function() {
+						       solve('x + ((x - 1', 2);
+						   },
+						   function (err) {
+							   return String(err.message) === EXPRESSION_ERROR;
+						   },
+						   'Error thrown');
+		assert.throws(function() {
+					      solve('x + (x * (7 - ( 5 + 1))', 2);
+					  },
+					  function (err) {
+						  return String(err.message) === EXPRESSION_ERROR;
+					  },
+					  'Error thrown');
+		assert.throws(function() {
+					      solve('x + (7 - 1) * ((x - 1)', 2);
+					  },
+					  function (err) {
+						  return String(err.message) === EXPRESSION_ERROR;
+					  },
+					  'Error thrown');
+		assert.throws(function() {
+					      solve('()', 2);
+					  },
+					  function (err) {
+						  return String(err.message) === EXPRESSION_ERROR;
+					  },
+					  'Error thrown');
+		assert.throws(function() {
+					      solve('(+)', 2);
+					  },
+					  function (err) {
+						  return String(err.message) === EXPRESSION_ERROR;
+					  },
+					  'Error thrown');
+		assert.throws(function() {
+					      solve('x x x', 2);
+					  },
+					  function (err) {
+						  return String(err.message) === EXPRESSION_ERROR;
+					  },
+					  'Error thrown');
+		assert.throws(function() {
+					      solve('x++', 2);
+					  },
+					  function (err) {
+					      return String(err.message) === EXPRESSION_ERROR;
+					  },
+					  'Error thrown');
+		assert.throws(function() {
+					      solve('x ++ (5 - 1)', 2);
+					  },
+					  function (err) {
+					      return String(err.message) === EXPRESSION_ERROR;
+					  },
+					  'Error thrown');
+		assert.throws(function() {
+					      solve('x**2', 2);
+					  },
+					  function (err) {
+					      return String(err.message) === EXPRESSION_ERROR;
+					  },
+					  'Error thrown');
 	});
 	QUnit.test('solve правильно обрабатывает ошибку с запрещенными символами в выражении ', function (assert) {
-		assert.strictEqual(solve('x  + 4 -(  5 - 2)', 'a'), SYNTAX_ERROR);
-		assert.strictEqual(solve('4 * 6 + (5 - 1 * x)', 'x'), SYNTAX_ERROR);
-		assert.strictEqual(solve('2abc*x*3', 3), SYNTAX_ERROR);
-		assert.strictEqual(solve('x^100', 3), SYNTAX_ERROR);
-		assert.strictEqual(solve('a++', 3), SYNTAX_ERROR);
-		assert.strictEqual(solve('Hello + x', 3), SYNTAX_ERROR);
+		assert.throws(function() {
+						  solve('x  + 4 -(  5 - 2)', 'a');
+						},
+					  function (err) {
+						  return String(err.name) === 'SyntaxError';
+						},
+					  'Error thrown');
+		assert.throws(function() {
+					  	  solve('4 * 6 + (5 - 1 * x)', 'x');
+						},
+					  function (err) {
+						  return String(err.name) === 'SyntaxError';
+						},
+					  'Error thrown');
+		assert.throws(function() {
+					      solve('2abc*x*3', 3);
+					  },
+					  function (err) {
+						  return String(err.name) === 'SyntaxError';
+					  },
+					  'Error thrown');
+		assert.throws(function() {
+					  	  solve('x^100', 3);
+					  },
+					  function (err) {
+						  return String(err.name) === 'SyntaxError';
+					  },
+					 'Error thrown');
+		assert.throws(function() {
+					      solve('a++', 3);
+					  },
+					  function (err) {
+						  return String(err.name) === 'SyntaxError';
+					  },
+					  'Error thrown');
+		assert.throws(function() {
+					      solve('Hello + x', 3);
+					  },
+					  function (err) {
+						  return String(err.name) === 'SyntaxError';
+					  },
+					  'Error thrown');
+		assert.throws(function() {
+					      solve(5, 5);
+					  },
+					  function (err) {
+						  return String(err.name) === 'TypeError';
+					  },
+					  'Error thrown');
 	});
 });
