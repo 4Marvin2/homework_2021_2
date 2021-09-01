@@ -54,6 +54,8 @@ const getPriority = (operator) => {
             return 4;
         case '/':
             return 4;
+        default:
+            return null;
     };
 };
 
