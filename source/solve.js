@@ -25,12 +25,12 @@ const checkBrackets = (expression) => {
         if (i > -1) {
             stack.push(close[i]);
         }
-        if (close.includes(symbol) && symbol != stack.pop()) {
+        if (close.includes(symbol) && symbol !== stack.pop()) {
             return false;
         }
     }
 
-    return stack.length == 0;
+    return stack.length === 0;
 };
 
 /**
@@ -104,14 +104,14 @@ const stringToPostfix = (expression) => {
     let rpn = '';
     const operatorsStack = [];
     for (let i = 0; i < expression.length; i++) {
-        if (expression[i] == ' ') {
+        if (expression[i] === ' ') {
             continue;
         }
         if (isDigit(expression[i])) {
             while (isDigit(expression[i])) {
                 rpn += expression[i];
                 i++;
-                if (i == expression.length) {
+                if (i === expression.length) {
                     break;
                 }
             }
@@ -120,12 +120,12 @@ const stringToPostfix = (expression) => {
             i--;
         }
         if (isOperator(expression[i])) {
-            if (expression[i] == '(') {
+            if (expression[i] === '(') {
                 operatorsStack.push(expression[i]);
-            } else if (expression[i] == ')') {
+            } else if (expression[i] === ')') {
                 let bracketsSymbol = operatorsStack.pop();
 
-                while (bracketsSymbol != '(') {
+                while (bracketsSymbol !== '(') {
                     rpn += bracketsSymbol + ' ';
                     bracketsSymbol = operatorsStack.pop();
                 }
@@ -192,7 +192,7 @@ const operations = (operator, firstArgument, secondArgument) => {
  */
 
 const calculatePostfix = (expression) => {
-    if (typeof(expression) != 'string') {
+    if (typeof(expression) !== 'string') {
         throw new TypeError(TYPE_ERROR);
     }
 
@@ -204,7 +204,7 @@ const calculatePostfix = (expression) => {
             while (isDigit(expression[i])) {
                 fullNumber += expression[i];
                 i++;
-                if (i == expression.length) {
+                if (i === expression.length) {
                     break;
                 }
             }
@@ -238,7 +238,7 @@ const calculatePostfix = (expression) => {
  */
 
 const solve = (expression, xValue) => {
-    if (typeof(expression) != 'string') {
+    if (typeof(expression) !== 'string') {
         throw new TypeError(TYPE_ERROR);
     }
 
