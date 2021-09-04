@@ -143,7 +143,7 @@ const stringToPostfix = (expression) => {
 
     if (operatorsStack.length > 0) {
         const reducer = (accum, currOperator) => accum + currOperator + ' ';
-        rpn += operatorsStack.reduceRight(reducer) + ' '
+        rpn += operatorsStack.reduceRight(reducer) + ' ';
     }
 
     if (!(OPERATORS_REGEX.test(rpn) && DIGIT_REGEX.test(rpn))) {
