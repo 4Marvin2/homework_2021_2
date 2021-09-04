@@ -32,6 +32,7 @@ QUnit.module('Тестируем функцию solve', function() {
         assert.throws(() => solve('x**2', 2), new Error(EXPRESSION_ERROR), 'Error thrown');
     });
     QUnit.test('solve правильно обрабатывает ошибку с запрещенными символами в выражении ', function(assert) {
+        assert.throws(() => solve('', 'a'), new SyntaxError(SYNTAX_ERROR), 'Error thrown');
         assert.throws(() => solve('x  + 4 -(  5 - 2)', 'a'), new SyntaxError(SYNTAX_ERROR), 'Error thrown');
         assert.throws(() => solve('4 * 6 + (5 - 1 * x)', 'x'), new SyntaxError(SYNTAX_ERROR), 'Error thrown');
         assert.throws(() => solve('2abc*x*3', 3), new SyntaxError(SYNTAX_ERROR), 'Error thrown');

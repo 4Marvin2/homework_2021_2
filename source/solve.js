@@ -16,16 +16,16 @@ const TYPE_ERROR = 'Invalid type of expression';
  */
 
 const checkBrackets = (expression) => {
-    let stack = [];
+    const stack = [];
     const open = '(';
     const close = ')';
 
     for (const symbol of expression) {
-        let i = open.indexOf(symbol);
+        const i = open.indexOf(symbol);
         if (i > -1) {
             stack.push(close[i]);
         }
-        if (close.includes(symbol) && (symbol != stack.pop())) {
+        if (close.includes(symbol) && symbol != stack.pop()) {
             return false;
         }
     }
@@ -36,8 +36,8 @@ const checkBrackets = (expression) => {
 /**
  * Возвращает приоритет арифметического оператора.
  *
- * @param {char} operator Оператор.
- * @return {number} Приоритет оператора.
+ * @param {string} operator Оператор.
+ * @return {number|null} Если оператор ()+-/*, то приоритет оператора, иначе null
  */
 
 const getPriority = (operator) => {
@@ -62,7 +62,7 @@ const getPriority = (operator) => {
 /**
  * Проверяет является ли символ оператором.
  *
- * @param {char} symbol Символ.
+ * @param {string} symbol Символ.
  * @return {boolean} Является (true) или не является (false) оператором.
  */
 
@@ -76,7 +76,7 @@ const isOperator = (symbol) => {
 /**
  * Проверяет является ли символ цифрой.
  *
- * @param {char} symbol Символ.
+ * @param {string} symbol Символ.
  * @return {boolean} Является (true) или не является (false) цифрой.
  */
 
@@ -100,7 +100,7 @@ const stringToPostfix = (expression) => {
     }
 
     let rpn = '';
-    let operatorsStack = [];
+    const operatorsStack = [];
     for (let i = 0; i < expression.length; i++) {
         if (expression[i] == ' ') {
             continue;
@@ -129,7 +129,8 @@ const stringToPostfix = (expression) => {
                 }
             } else {
                 if (operatorsStack.length > 0) {
-                    if (getPriority(expression[i]) <= (getPriority(operatorsStack[operatorsStack.length - 1]))) {
+                    const topOpr = operatorsStack[operatorsStack.length - 1]
+                    if (getPriority(expression[i]) <= getPriority(topOpr)) {
                         rpn += operatorsStack.pop() + ' ';
                     }
                 }
@@ -142,7 +143,7 @@ const stringToPostfix = (expression) => {
         rpn += operatorsStack.pop() + ' ';
     }
 
-    if (!((OPERATORS_REGEX.test(rpn)) && (DIGIT_REGEX.test(rpn)) && !!rpn)) {
+    if (!(OPERATORS_REGEX.test(rpn) && DIGIT_REGEX.test(rpn))) {
         throw new Error(EXPRESSION_ERROR);
     }
 
@@ -152,10 +153,10 @@ const stringToPostfix = (expression) => {
 /**
  * Возвращает результат выполнения арифметической операции.
  *
- * @param {char} operator Арифметическое выражение.
+ * @param {string} operator Арифметическое выражение.
  * @param {number} firstArgument Значение первого операнда.
  * @param {number} secondArgument Значение второго операнда.
- * @return {number} Вычисленное значение операции.
+ * @return {number|null} Если оператор +-/*, то посчитанное число, иначе null
  */
 
 const operations = (operator, firstArgument, secondArgument) => {
@@ -190,7 +191,7 @@ const calculatePostfix = (expression) => {
         throw new TypeError(TYPE_ERROR);
     }
 
-    let stack = [];
+    const stack = [];
 
     for (let i = 0; i < expression.length; i++) {
         if (isDigit(expression[i])) {
@@ -211,7 +212,7 @@ const calculatePostfix = (expression) => {
         }
     }
 
-    let result = stack.pop();
+    const result = stack.pop();
 
     if (isNaN(result)) {
         throw new Error(EXPRESSION_ERROR);
@@ -233,11 +234,11 @@ const solve = (expression, xValue) => {
         throw new TypeError(TYPE_ERROR);
     }
 
-    if (!(NO_VALID_SYMBOLS_REGEX.test(expression)) || (!(isDigit(xValue)))) {
+    if (!NO_VALID_SYMBOLS_REGEX.test(expression) || !isDigit(xValue)) {
         throw new SyntaxError(SYNTAX_ERROR);
     }
 
-    if (!(checkBrackets(expression))) {
+    if (!checkBrackets(expression)) {
         throw new Error(EXPRESSION_ERROR);
     }
 
