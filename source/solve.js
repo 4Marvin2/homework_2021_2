@@ -92,6 +92,8 @@ const isDigit = (symbol) => {
  *
  * @param {string} expression Арифметическое выражение.
  * @return {string} Выражение в постфиксной форме.
+ * @throws {TypeError} Выражение не является строкой
+ * @throws {Error} Ошибка в выражении
  */
 
 const stringToPostfix = (expression) => {
@@ -139,8 +141,9 @@ const stringToPostfix = (expression) => {
         }
     }
 
-    while (operatorsStack.length > 0) {
-        rpn += operatorsStack.pop() + ' ';
+    if (operatorsStack.length > 0) {
+        const reducer = (accum, currOperator) => accum + currOperator + ' ';
+        rpn += operatorsStack.reduceRight(reducer) + ' '
     }
 
     if (!(OPERATORS_REGEX.test(rpn) && DIGIT_REGEX.test(rpn))) {
@@ -184,6 +187,8 @@ const operations = (operator, firstArgument, secondArgument) => {
  *
  * @param {string} expression Арифметическое выражение.
  * @return {number} Вычисленное значение этого выражения.
+ * @throws {TypeError} Выражение не является строкой
+ * @throws {Error} Ошибка в выражении
  */
 
 const calculatePostfix = (expression) => {
@@ -227,6 +232,9 @@ const calculatePostfix = (expression) => {
  * @param {string} expression Арифметическое выражение.
  * @param {number} xValue Значение x в данном выражении.
  * @return {number} Вычисленное значение этого выражения.
+ * @throws {TypeError} Выражение не является строкой
+ * @throws {SyntaxError} В выражении содержатся недопустимые символы
+ * @throws {Error} Ошибка в выражении
  */
 
 const solve = (expression, xValue) => {
